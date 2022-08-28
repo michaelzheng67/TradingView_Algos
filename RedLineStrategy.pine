@@ -1,0 +1,19 @@
+//@version=5
+
+strategy("Red Line Strategy", default_qty_type=strategy.percent_of_equity, default_qty_value=100, overlay=true)
+red_line = ta.sma(close, 4)
+average_vol = ta.sma(volume, 4)
+
+plot(series=red_line, color=color.red, title="Red Line", linewidth=2)
+
+// way above or below red line
+if open >= red_line * 1.04 and volume >= average_vol * 1.3
+    strategy.entry("short", strategy.short)
+
+else if open <= red_line * 1.03 and volume >= average_vol * 1.3
+    strategy.entry("long", strategy.long)
+
+
+// closing positions
+if close <= red_line * 1.01 and close >= red_line * .99
+    strategy.close_all()
