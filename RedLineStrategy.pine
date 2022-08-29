@@ -1,19 +1,35 @@
+// This source code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
+// © vdzgn2c7sr
+
 //@version=5
 
 strategy("Red Line Strategy", default_qty_type=strategy.percent_of_equity, default_qty_value=100, overlay=true)
 red_line = ta.sma(close, 4)
 average_vol = ta.sma(volume, 4)
 
-plot(series=red_line, color=color.red, title="Red Line", linewidth=2)
+// 4day MA source code
+len = input.int(4, minval=1, title="Length")
+src = input(close, title="Source")
+offset = input.int(title="Offset", defval=0, minval=-500, maxval=500)
+out = ta.sma(src, len)
+
+// trade only between 10am and 3pm to avoid high vol at opening and closing of trading day
+inSession = not na(time(timeframe.period, "1000-1500", "UTC-4"))
 
 // way above or below red line
-if open >= red_line * 1.04 and volume >= average_vol * 1.3
+if open >= out * 1.04 and volume >= average_vol * 1.3 and not na(inSession)
     strategy.entry("short", strategy.short)
+    strategy.exit("exit short", from_entry="short", stop=open * 1.06)
+    strategy.exit("exit short w profit", from_entry="short", stop=open * .97)
 
-else if open <= red_line * 1.03 and volume >= average_vol * 1.3
+else if open <= out * .97 and volume >= average_vol * 1.3 and not na(inSession)
     strategy.entry("long", strategy.long)
+    strategy.exit("exit long", from_entry="long", stop=open * .95)
+    strategy.exit("exit long w profit", from_entry="long", stop=open * 1.02)
+
 
 
 // closing positions
 if close <= red_line * 1.01 and close >= red_line * .99
     strategy.close_all()
+
