@@ -1,5 +1,9 @@
-// This source code is subject to the terms of the Mozilla Public License 2.0 at https://mozilla.org/MPL/2.0/
-// © vdzgn2c7sr
+// This algorithm is based on the idea of mean reversion and that within intraday trading on the 15min timeframe, that mean reversion will play out.
+// This idea and algo is based on a few heuristics. Firstly, it is assumed that a simple moving average within a relatively shorter time frame
+// (4 period MA) can capture and smoothen out more recent price action and provide a target for mean reversion. Moreover, higher volume,
+// apart from normally when there is supposed to be higher vol such as during opening and closing, is indicative of greater buying/selling pressure
+// at that given price range, and is a signal that prices are to reverse soon. Now of course, this does not happen all the time, which is why
+// stops are implemented to take losses early and let profitable positions run until there's a signal that the position may soon reverse.
 
 //@version=5
 
